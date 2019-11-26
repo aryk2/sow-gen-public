@@ -10,6 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import start_build from "../helpers/sow_builder";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from '@material-ui/core/InputLabel';
+import {Typography} from "@material-ui/core";
 
 const customStyles = {
     control: base => ({
@@ -18,6 +19,8 @@ const customStyles = {
         minHeight: 50
     })
 };
+
+
 
 const Form  =  () => {
     const [formState, setFormState] = useState(null);
@@ -47,12 +50,11 @@ const Form  =  () => {
 
     const onSubmit = (data) => {
         setFormState(data);
-        console.log('ON SUBMIT', data);
     };
 
     useEffect(() => {
         if (formState === null) return;
-       start_build(formState)
+        let CP_URL = start_build(formState);
 
     }, [formState]);
 
@@ -208,10 +210,13 @@ const Form  =  () => {
                     Submit
                 </Button>
             </form>
+
             </Paper>
             </Grid>
 
     )
 };
+
+
 
 export default Form

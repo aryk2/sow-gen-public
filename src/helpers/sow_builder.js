@@ -96,7 +96,6 @@ function build_sow() {
     }
 
     let copy_title = SOW_DATA.customer + ' ' + service_name + ' SoW';
-    console.log(copy_title);
     let copy_id = '';
 
     window.gapi.client.load("drive", "v3", () => {
@@ -256,11 +255,8 @@ function build_sow() {
             update_doc.execute(function(resp) {
             });
 
-            console.log(copy_id);
-
             let return_link = "https://drive.google.com/open?id=" + copy_id;
-            console.log(return_link);
-            console.log("did it work?");
+            console.log(return_link)
             return (return_link)
         });
     });
