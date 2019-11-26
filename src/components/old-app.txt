@@ -1,0 +1,140 @@
+//run with npm start
+
+const gapi = window.gapi;
+
+const CLIENT_ID = '767596157395-mlgjapv3d0e5847jminnehdsd5lomloi.apps.googleusercontent.com';
+// const API_KEY = 'AIzaSyDvQwZ1OvDl4owhkk1sq2jEs2uI1NUPCwM';
+// Array of API discovery doc URLs for APIs used by the quickstart
+const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+// Authorization scopes required by the API; multiple scopes can be
+// included, separated by spaces.
+const SCOPES = 'https://www.googleapis.com/auth/drive';
+
+var SCOPE = 'https://www.googleapis.com/auth/drive'; //.metadata.readonly
+
+
+
+
+
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+
+
+const App = () =>  {
+    console.log("1");
+    const [user, setUser] = useState(null);
+    const [client, setClient] = useState(null);
+
+    /**
+     *  Initializes the API client library and sets up sign-in state
+     *  listeners.
+     */
+    function initClient() {
+        console.log("2");
+
+        const auth2 = gapi.auth2.init({
+            client_id: CLIENT_ID,
+            scope: SCOPE
+        });
+
+        auth2.isSignedIn.listen((value) => {
+            console.log("3");
+            console.log('isSignedIn', value)
+
+        });
+
+        auth2.currentUser.listen((user) => {
+            console.log("4");
+            console.log('currentUser', user);
+            setUser(user);
+            console.log('currentUser', user);
+/*
+            let g_auth = user.Zi.access_token;
+
+            if (user) {
+
+                const drive = gapi.client.drive({version: 'v3', g_auth});
+                conresponse = drive.files.list({
+                    'pageSize': 10,
+                    'fields': "nextPageToken, files(id, name)"
+                }).then(function(response) {
+                    console.log(response.result)
+                });
+
+            }  */
+
+
+
+
+        });
+
+        // Sign in the user if they are currently signed in.
+        if (auth2.isSignedIn.get() == true) {
+            console.log("5");
+            auth2.signIn();
+        }
+
+        setClient(auth2);
+
+
+    }
+
+    useEffect(() => {
+        console.log("6");
+        if (client !== null && (client && !client.error)) return undefined;
+        console.log("7");
+        gapi.load('auth2', initClient);
+    }, [client]);
+
+    useEffect(() => {
+        console.log("8");
+        console.log(`User is ${user}`);
+    }, [user]);
+
+    return (
+
+        <div className={"App1"}>
+
+
+
+            <Grid
+                container
+                alignContent = "center"
+                justify = "center"
+            >
+
+                { (!user) ? (
+                    <Box m={2} display={'flex'} justifyContent={'center'} flexDirection={'column'}>
+                        <Typography variant={'h5'}>
+                            Please Sign In
+                        </Typography>
+                        <Box mt={2} flex={1} display={'flex'} justifyContent={'center'}>
+
+                            <Button
+                                variant={'contained'}
+                                onClick={() => client.signIn()}>SIGN IN</Button>
+
+                            <div className="g-signin2" data-onsuccess="onSignIn" />
+                        </Box>
+                    </Box>
+                ) : (
+                    <Box>
+                        <Form/>
+                    </Box>
+                ) }
+
+            </Grid>
+        </div>
+    )
+};
+
+
+
+export default App;
+
+
