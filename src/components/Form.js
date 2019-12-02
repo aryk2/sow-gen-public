@@ -53,12 +53,23 @@ const Form  =  () => {
     };
 
     useEffect( () => {
-        start_build(formState);
 
 
-
+        let x = submit();
 
     }, [formState]);
+
+    async function wrapStart() {
+        return new Promise((resolve, reject) => {
+            let return_promise = start_build(formState);
+            resolve(return_promise);
+        });
+    }
+
+    async function submit() {
+        let return_link = await wrapStart();
+        console.log(return_link);
+    }
 
 
         return (

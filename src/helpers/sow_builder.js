@@ -5,45 +5,58 @@ import get_info from "./copper";
 let SOW_DATA;
 let TEMPLATE_ID = '';
 
-export default function start_build(data) {
+export default async function start_build(data) {
     if(data) {
         SOW_DATA = data;
-        componentDidMount();
+        return await componentDidMount();
     }
 }
 
-function componentDidMount() {
+async function componentDidMount() {
     // 1. Load the JavaScript client library.
-    window.gapi.load("client", initClient);
+    async function wrapLoad() {
+        return new Promise((resolve, reject) => {
+            let return_link = '';
+            window.gapi.load("client", () => {
+                return_link = initClient();
+                resolve(return_link);
+            });
+        });
+    }
+    return await wrapLoad();
 }
 
-function initClient () {
-    // 2. Initialize the JavaScript client library.
-    window.gapi.client.init({
-        apiKey: config.apiKey,
-        clientId: config.clientId,
-        scope: config.scopes,
-        // Your API key will be automatically added to the Discovery Document URLs.
-        discoveryDocs: config.discoveryDocs
-    })
-        .then(() => {
-            // 3. Initialize and make the API request.
-            build_sow()
-        });
+async function initClient () {
+    function wrapInit() {
+        return new Promise((resolve, reject) => {
+            // 2. Initialize the JavaScript client library.
+            window.gapi.client.init({
+                apiKey: config.apiKey,
+                clientId: config.clientId,
+                scope: config.scopes,
+                // Your API key will be automatically added to the Discovery Document URLs.
+                discoveryDocs: config.discoveryDocs
+            })
+                .then(() => {
+                    // 3. Initialize and make the API request.
+                    resolve(build_sow());
+                });
+        })
+    }
+    return await wrapInit();
 }
 
 async function build_sow() {
-    let link = await load_drive();
-    console.log(link);
-    return link;
-}
-
-async function load_drive(){
     let link;
-    await window.gapi.client.load("drive", "v3", () => {
-        link = drive_changes();
-    });
-    return link;
+    function wrapDriveInit() {
+        return new Promise((resolve, reject) => {
+            window.gapi.client.load("drive", "v3", () => {
+                link = drive_changes();
+                resolve(link);
+            });
+        })
+    }
+    return await wrapDriveInit();
 }
 
 async function drive_changes() {
@@ -78,8 +91,10 @@ async function drive_changes() {
         "fileId": TEMPLATE_ID,
         "resource": body
     });
-    let link = await execute_copy(request);
-    return link;
+    let return_link = await execute_copy(request);
+    return new Promise((resolve, reject) => {
+        resolve(return_link);
+    });
 }
 
 async function execute_copy(request) {
@@ -123,162 +138,178 @@ async function execute_copy(request) {
         tandcs = '';//TODO format_doc('1mT-6Bil5rZdtvVuFqS6bpZFhg-lZWmSokPiW5NPqAGo')
     }
     let copy_id = '';
-    request.execute(function(resp) {
-        copy_id = resp.id;
-        //TODO favicon logo stuff from copper here
 
-        /* TODO once the logo stuff is done do this
-        let requests = [
+    function wrapCopyRequest() {
+        return new Promise((resolve, reject) => {
+            request.execute((resp) => {
+                copy_id = resp.id;
+                resolve(resp);
+            });
+        })
+    }
+
+    await wrapCopyRequest();
+
+    // let x = request.execute(function(resp) {
+    //     copy_id = resp.id;
+    //
+    // });
+
+    //TODO favicon logo stuff from copper here
+
+    /* TODO once the logo stuff is done do this
+    let requests = [
+        {
+            'replaceAllText': {
+                'containsText': {
+                    'text': '{{customer_logo}}',
+                    'matchCase': true
+                },
+                'replaceText': ' '
+            }
+        },
+        {
+            'insertInlineImage': {
+                'uri': customer_data['logo_url'], "location": {'index': 78, 'segmentId': 'kix.hf1'},
+                'objectSize': {'height': {'magnitude': 100, 'unit': 'PT'}, 'width': {'magnitude': 200, 'unit': 'PT'}}
+            }
+        },
+        {
+            'replaceAllText': {
+                'containsText': {
+                    'text': '{{terms_conditions}}',
+                    'matchCase': true
+                },
+                'replaceText': tandcs
+            }
+        }
+    ]
+    body = {
+        'requests': requests
+    }
+
+    const update_doc = window.gapi.client.docs.documents.batchUpdate({
+        'documentId': copy_id,
+        'resource': body
+    });
+    update_doc.execute(function(resp) {
+    });
+*/
+
+    let body = {
+        "requests": [
             {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{customer_logo}}',
-                        'matchCase': true
+                "replaceAllText": {
+                    "containsText": {
+                        "text": "{{customer_name}}",
+                        "matchCase": true
                     },
-                    'replaceText': ' '
+                    "replaceText": customer_data['customer_name']
                 }
             },
             {
-                'insertInlineImage': {
-                    'uri': customer_data['logo_url'], "location": {'index': 78, 'segmentId': 'kix.hf1'},
-                    'objectSize': {'height': {'magnitude': 100, 'unit': 'PT'}, 'width': {'magnitude': 200, 'unit': 'PT'}}
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{customer_name}}',
+                        'matchCase': true
+                    },
+                    'replaceText': customer_data['customer_name']
                 }
             },
             {
                 'replaceAllText': {
                     'containsText': {
-                        'text': '{{terms_conditions}}',
+                        'text': '{{customer_web_link}}',
                         'matchCase': true
                     },
-                    'replaceText': tandcs
+                    'replaceText': customer_data['customer_web_link']
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{var_name}}',
+                        'matchCase': true
+                    },
+                    'replaceText': SOW_DATA.var
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{creator_name}}',
+                        'matchCase': true
+                    },
+                    'replaceText': SOW_DATA.name
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{date_of_creation}}',
+                        'matchCase': true
+                    },
+                    'replaceText': customer_data['date_of_creation']
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{quote_type}}',
+                        'matchCase': true
+                    },
+                    'replaceText': SOW_DATA.quote
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{about_ignw}}',
+                        'matchCase': true
+                    },
+                    'replaceText': about_ignw
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{quote_type_text}}',
+                        'matchCase': true
+                    },
+                    'replaceText': quote_type_text
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{customer_address}}',
+                        'matchCase': true
+                    },
+                    'replaceText': customer_data['customer_address']
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{customer_address_city}}',
+                        'matchCase': true
+                    },
+                    'replaceText': customer_data['customer_address_city']
                 }
             }
         ]
-        body = {
-            'requests': requests
-        }
+    };
 
-        const update_doc = window.gapi.client.docs.documents.batchUpdate({
-            'documentId': copy_id,
-            'resource': body
-        });
-        update_doc.execute(function(resp) {
-        });
-*/
-
-        let body = {
-            "requests": [
-                {
-                    "replaceAllText": {
-                        "containsText": {
-                            "text": "{{customer_name}}",
-                            "matchCase": true
-                        },
-                        "replaceText": customer_data['customer_name']
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{customer_name}}',
-                            'matchCase': true
-                        },
-                        'replaceText': customer_data['customer_name']
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{customer_web_link}}',
-                            'matchCase': true
-                        },
-                        'replaceText': customer_data['customer_web_link']
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{var_name}}',
-                            'matchCase': true
-                        },
-                        'replaceText': SOW_DATA.var
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{creator_name}}',
-                            'matchCase': true
-                        },
-                        'replaceText': SOW_DATA.name
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{date_of_creation}}',
-                            'matchCase': true
-                        },
-                        'replaceText': customer_data['date_of_creation']
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{quote_type}}',
-                            'matchCase': true
-                        },
-                        'replaceText': SOW_DATA.quote
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{about_ignw}}',
-                            'matchCase': true
-                        },
-                        'replaceText': about_ignw
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{quote_type_text}}',
-                            'matchCase': true
-                        },
-                        'replaceText': quote_type_text
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{customer_address}}',
-                            'matchCase': true
-                        },
-                        'replaceText': customer_data['customer_address']
-                    }
-                },
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{customer_address_city}}',
-                            'matchCase': true
-                        },
-                        'replaceText': customer_data['customer_address_city']
-                    }
-                }
-            ]
-        };
-
-        const update_doc = window.gapi.client.docs.documents.batchUpdate({
-            'documentId': copy_id,
-            'resource': body
-        });
-        update_doc.execute(function (resp) {
-        });
-
-        let return_link = "https://drive.google.com/open?id=" + copy_id;
-        console.log("RETURN LINK: " + return_link);
-        return (return_link);
+    const update_doc = window.gapi.client.docs.documents.batchUpdate({
+        'documentId': copy_id,
+        'resource': body
     });
+    update_doc.execute(function (resp) {
+    });
+
+    let return_link = "https://drive.google.com/open?id=" + copy_id;
+    //console.log("RETURN LINK: " + return_link);
+    return new Promise((resolve, reject) => {
+        resolve(return_link);
+    })
 }
