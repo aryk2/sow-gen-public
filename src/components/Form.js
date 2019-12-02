@@ -52,9 +52,11 @@ const Form  =  () => {
         setFormState(data);
     };
 
-    useEffect(() => {
-        if (formState === null) return;
-        let CP_URL = start_build(formState);
+    useEffect( () => {
+        start_build(formState);
+
+
+
 
     }, [formState]);
 
