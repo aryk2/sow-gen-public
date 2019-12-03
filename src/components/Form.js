@@ -55,7 +55,9 @@ const Form  =  () => {
     useEffect( () => {
 
 
+
         let x = submit();
+
 
     }, [formState]);
 
@@ -72,12 +74,14 @@ const Form  =  () => {
     }
 
 
+
+
         return (
 
             <Grid>
                 <NavBar/>
 
-            <Paper style={{padding:40}}>
+            <Paper style={{padding:40, }}>
 
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -219,6 +223,8 @@ const Form  =  () => {
                         </Select>
                     </FormControl>
                 </div>
+
+
                 <Button variant="contained" type={"submit"} style={{margin:20}}>
                     Submit
                 </Button>
@@ -229,6 +235,7 @@ const Form  =  () => {
 
     )
 };
+//<div className="g-signin2" data-onsuccess="onSignIn"></div>
 
 
 

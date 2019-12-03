@@ -8,6 +8,11 @@ let TEMPLATE_ID = '';
 export default async function start_build(data) {
     if(data) {
         SOW_DATA = data;
+        var auth2 = window.gapi.auth2.getAuthInstance();
+        // Sign the user in, and then retrieve their ID.
+        auth2.signIn().then(function() {
+            console.log(auth2.currentUser.get().getId());
+        });
         return await componentDidMount();
     }
 }
@@ -29,7 +34,7 @@ async function componentDidMount() {
 async function initClient () {
     function wrapInit() {
         return new Promise((resolve, reject) => {
-            // 2. Initialize the JavaScript client library.
+            //2. Initialize the JavaScript client library.
             window.gapi.client.init({
                 apiKey: config.apiKey,
                 clientId: config.clientId,
@@ -38,9 +43,11 @@ async function initClient () {
                 discoveryDocs: config.discoveryDocs
             })
                 .then(() => {
+
                     // 3. Initialize and make the API request.
-                    resolve(build_sow());
+                    //resolve(build_sow()); //this should be the one
                 });
+            resolve(build_sow());
         })
     }
     return await wrapInit();

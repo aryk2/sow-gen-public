@@ -34,6 +34,8 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=onLoadCallback" async defer></script>
+    <meta name="google-signin-client_id" content="767596157395-009pinvel2k92h75li9k5t3mn7e09r2b.apps.googleusercontent.com">
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -43,6 +45,27 @@
 
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
+
     -->
+
+
+    <script>
+
+      function onLoadCallback() {
+
+
+        gapi.load('auth2', function() {
+          gapi.auth2.init({
+            client_id: '767596157395-009pinvel2k92h75li9k5t3mn7e09r2b.apps.googleusercontent.com',
+            //This two lines are important not to get profile info from your users
+            fetch_basic_profile: false,
+            scope: 'email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents'
+          });
+        });
+      }
+
+
+
+    </script>
   </body>
 </html>
