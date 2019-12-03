@@ -70,7 +70,6 @@ const Form  =  () => {
         let return_link = 0;
         return_link = await wrapStart();
         //return_link = String(return_link);
-        console.log("HELLO")
         //window.open(return_link, "_blank");
         setReturnLink(return_link);
         console.log(return_link);
