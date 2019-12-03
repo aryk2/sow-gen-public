@@ -12,6 +12,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from '@material-ui/core/InputLabel';
 import {Typography} from "@material-ui/core";
 
+
 const customStyles = {
     control: base => ({
         ...base,
@@ -29,8 +30,8 @@ const Form  =  () => {
     const [quote, setQuote] = useState(0);
     const [about, setAbout] = useState(0);
     const [tnc, setTnc] = useState(0);
+    const [returnLink, setReturnLink] = useState(0);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
-
 
     useEffect(() => {
         register({name: "service"});
@@ -53,9 +54,6 @@ const Form  =  () => {
     };
 
     useEffect( () => {
-
-
-
         let x = submit();
 
 
@@ -69,24 +67,40 @@ const Form  =  () => {
     }
 
     async function submit() {
-        let return_link = await wrapStart();
+        let return_link = 0;
+        return_link = await wrapStart();
+        //return_link = String(return_link);
+        console.log("HELLO")
+        //window.open(return_link, "_blank");
+        setReturnLink(return_link);
         console.log(return_link);
-    }
 
 
+    };
 
+    const DriveButton = () => {
+        if(returnLink === 0) {
+            return (
+                <Button variant="contained" style={{margin: 20}} disabled>
+                    View SoW in Drive
+                </Button>
+            )
+        }
+        else {
+            return (
+                <Button variant="contained" style={{margin: 20}} disabled>
+                    View SoW in Drive
+                </Button>
+            )
+        }
+    };
 
         return (
 
             <Grid>
                 <NavBar/>
-
             <Paper style={{padding:40, }}>
-
-
             <form onSubmit={handleSubmit(onSubmit)}>
-
-
                 <div>
                     <TextField
                         name={'name'}
@@ -223,20 +237,32 @@ const Form  =  () => {
                         </Select>
                     </FormControl>
                 </div>
+                <Grid item xs={12}>
+                    <Grid container justify="center" >
 
-
-                <Button variant="contained" type={"submit"} style={{margin:20}}>
-                    Submit
-                </Button>
+                            <Grid key='0' item>
+                                <Grid>
+                                    <Button variant="contained" type={"submit"} style={{margin:20}}>
+                                    Submit
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Grid key='1' item>
+                                <Grid>
+                                    <DriveButton/>
+                                </Grid>
+                            </Grid>
+                    </Grid>
+                </Grid>
             </form>
-
+                <Typography align={"center"} variant={"body2"}>{returnLink}</Typography>
             </Paper>
             </Grid>
-
     )
 };
-//<div className="g-signin2" data-onsuccess="onSignIn"></div>
+
 
 
 
 export default Form
+

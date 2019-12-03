@@ -1,6 +1,6 @@
 import config from "../config"
 import quote_type from "./quote_type_text";
-import get_info from "./copper";
+import getCopperInfo from "./copper";
 
 let SOW_DATA;
 let TEMPLATE_ID = '';
@@ -92,10 +92,12 @@ async function drive_changes() {
     let copy_title = SOW_DATA.customer + ' ' + service_name + ' SoW';
 
     let body = {
-        "name": copy_title
+        "name": copy_title,
+        "parents": ["1i2dtbIUX-NonzrNrnDMqSBbuhvdMpGJP"],
     };
     let request = window.gapi.client.drive.files.copy({
         "fileId": TEMPLATE_ID,
+        "supportsAllDrives": true,
         "resource": body
     });
     let return_link = await execute_copy(request);
@@ -116,7 +118,7 @@ async function execute_copy(request) {
         "customer_web_link": "",
         "logo_url": ""
     };
-    //let garbage = get_info(SOW_DATA);
+    customer_data = await getCopperInfo(customer_data);
 
     let quote_type_text = '';
     if (SOW_DATA.quote === "Fixed Fee"){
@@ -157,14 +159,9 @@ async function execute_copy(request) {
 
     await wrapCopyRequest();
 
-    // let x = request.execute(function(resp) {
-    //     copy_id = resp.id;
-    //
-    // });
-
     //TODO favicon logo stuff from copper here
 
-    /* TODO once the logo stuff is done do this
+    // TODO once the logo stuff is done do this
     let requests = [
         {
             'replaceAllText': {
@@ -191,19 +188,19 @@ async function execute_copy(request) {
             }
         }
     ]
-    body = {
+    let body = {
         'requests': requests
     }
 
-    const update_doc = window.gapi.client.docs.documents.batchUpdate({
+    let update_doc = window.gapi.client.docs.documents.batchUpdate({
         'documentId': copy_id,
         'resource': body
     });
     update_doc.execute(function(resp) {
     });
-*/
 
-    let body = {
+
+    body = {
         "requests": [
             {
                 "replaceAllText": {
@@ -307,7 +304,7 @@ async function execute_copy(request) {
         ]
     };
 
-    const update_doc = window.gapi.client.docs.documents.batchUpdate({
+    update_doc = window.gapi.client.docs.documents.batchUpdate({
         'documentId': copy_id,
         'resource': body
     });
