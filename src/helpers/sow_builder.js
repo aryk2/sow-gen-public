@@ -11,7 +11,6 @@ export default async function start_build(data) {
         var auth2 = window.gapi.auth2.getAuthInstance();
         // Sign the user in, and then retrieve their ID.
         auth2.signIn().then(function() {
-            console.log(auth2.currentUser.get().getId());
         });
         return await componentDidMount();
     }
@@ -116,9 +115,13 @@ async function execute_copy(request) {
         "customer_address": "",
         "customer_address_city": "",
         "customer_web_link": "",
-        "logo_url": ""
+        "logo_url": "",
+        "error": 0
     };
-    customer_data = await getCopperInfo(customer_data);
+    let response = await getCopperInfo(customer_data);
+    if(response.error === 0)
+        customer_data = response;
+
 
     let quote_type_text = '';
     if (SOW_DATA.quote === "Fixed Fee"){
@@ -312,6 +315,11 @@ async function execute_copy(request) {
     });
 
     let return_link = "https://drive.google.com/open?id=" + copy_id;
+
+    if(String(copy_id) == 'undefined') {
+        return_link = " ";
+
+    }
     //console.log("RETURN LINK: " + return_link);
     return new Promise((resolve, reject) => {
         resolve(return_link);
