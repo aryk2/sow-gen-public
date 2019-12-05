@@ -25,26 +25,15 @@ const customStyles = {
 
 const Form  =  () => {
     const [formState, setFormState] = useState(null);
-    const [service, setService] = useState(0);
-    const [Var, setVar] = useState(0);
-    const [quote, setQuote] = useState(0);
-    const [about, setAbout] = useState(0);
-    const [tnc, setTnc] = useState(0);
-    const [returnLink, setReturnLink] = useState(0);
+    const [template, setTemplate] = useState(0);
+    const [docsLink, setDocsLink] = useState(0);
+    const [sheetsLink, setSheetsLink] = useState(0);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
     useEffect(() => {
-        register({name: "service"});
-        register({name: "Var"});
-        register({name: "quote"});
-        register({name: "about"});
-        register({name: "tnc"});
+        register({name: "template"});
         return () => {
-            unregister('service');
-            unregister('Var');
-            unregister('quote');
-            unregister('about');
-            unregister('tnc');
+            unregister('template');
         }
     }, []);
 
@@ -67,28 +56,34 @@ const Form  =  () => {
     }
 
     async function submit() {
-        let return_link = 0;
+        let return_link = {"docsLink": '', "sheetsLink": ''};
         return_link = await wrapStart();
-        //return_link = String(return_link);
-        //window.open(return_link, "_blank");
-        setReturnLink(return_link);
-        console.log(return_link);
+        let sheetsLink, docsLink = '';
+        if(return_link && return_link.docsLink) {
+            docsLink = await return_link.docsLink;
+        }
+        if(return_link && return_link.sheetsLink) {
+            sheetsLink = await return_link.sheetsLink;
+        }
 
 
-    };
+        setDocsLink(docsLink);
+
+        setSheetsLink(sheetsLink);
+    }
 
     const DriveButton = () => {
-        if(returnLink === 0) {
+        if(docsLink === 0) {
             return (
                 <Button variant="contained" style={{margin: 20}} disabled>
-                    View SoW in Drive
+                    View SOW in Drive
                 </Button>
             )
         }
         else {
             return (
                 <Button variant="contained" style={{margin: 20}} disabled>
-                    View SoW in Drive
+                    View SOW in Drive
                 </Button>
             )
         }
@@ -98,164 +93,149 @@ const Form  =  () => {
 
             <Grid>
                 <NavBar/>
-            <Paper style={{padding:40, }}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <TextField
-                        name={'name'}
-                        error={!!errors.name}
-                        helperText={(errors.name) ? 'Name is required' : null}
-                        inputRef={register({required: true})}
-                        label="Name"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                    />
-                </div>
-                <div>
-                    <TextField
-                        name={'customer'}
-                        error={!!errors.customer}
-                        helperText={(errors.customer) ? 'Customer is required' : null}
-                        inputRef={register({required: true})}
-                        label="Customer"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                    />
-                </div>
-                <div style={{margin:20}}>
-                    <FormControl
-                    fullWidth>
-                        <InputLabel>Service</InputLabel>
-                    <Select
-                        name={'service'}
-                        value={service}
-                        onChange={(evt) => {
-                            setValue('service', evt.target.value);
-                            setService(evt.target.value)
-                        }}
-                        labelWidth={500}
-                        styles={customStyles}
-                        fullWidth={true}
-                    >
-                        <MenuItem value={''}>
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value="aci_supercharger_dsi">aci_supercharger_dsi</MenuItem>
-                    </Select>
-                    </FormControl>
-                </div>
-                <div style={{margin:20}}>
-                    <FormControl
-                    fullWidth>
-                        <InputLabel>Var</InputLabel>
-                        <Select
-                            name={'Var'}
-                            value={Var}
-                            onChange={(evt) => {
-                                setValue('Var', evt.target.value);
-                                setVar(evt.target.value)
-                            }}
-                            labelWidth={500}
-                            styles={customStyles}
-                            fullWidth={true}
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value="CDW">CDW</MenuItem>
-                            <MenuItem value="GDT">GDT</MenuItem>
-                            <MenuItem value="Presidio">Presidio</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
-                <div style={{margin:20}}>
-                <FormControl
-                    fullWidth>
-                    <InputLabel>Type of Quote</InputLabel>
-                    <Select
-                        name={'quote'}
-                        value={quote}
-                        onChange={(evt) => {
-                            setValue('quote', evt.target.value);
-                            setQuote(evt.target.value)
-                        }}
-                        labelWidth={500}
-                        styles={customStyles}
-                        fullWidth={true}
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value="T&M">T&M</MenuItem>
-                        <MenuItem value="Fixed Fee">Fixed Fee</MenuItem>
-                        <MenuItem value="Mixed Fixed and Variable">Mixed Fixed and Variable</MenuItem>
-                    </Select>
-                </FormControl>
-                </div>
-                <div style={{margin:20}}>
-                    <FormControl
-                        fullWidth>
-                        <InputLabel>Include About IGNW</InputLabel>
-                        <Select
-                            name={'about'}
-                            value={about}
-                            onChange={(evt) => {
-                                setValue('about', evt.target.value);
-                                setAbout(evt.target.value)
-                            }}
-                            labelWidth={500}
-                            styles={customStyles}
-                            fullWidth={true}
-                        >
-                            <MenuItem value="Yes">
-                                <em>Yes</em>
-                            </MenuItem>
-                            <MenuItem value="No">No</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
-                <div style={{margin:20}}>
-                    <FormControl
-                        fullWidth>
-                        <InputLabel>Include T&Cs</InputLabel>
-                        <Select
-                            name={'tnc'}
-                            value={tnc}
-                            onChange={(evt) => {
-                                setValue('tnc', evt.target.value);
-                                setTnc(evt.target.value)
-                            }}
-                            labelWidth={500}
-                            styles={customStyles}
-                            fullWidth={true}
-                        >
-                            <MenuItem value="MSA">MSA</MenuItem>
-                            <MenuItem value="TnC">Standard T&Cs</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
-                <Grid item xs={12}>
-                    <Grid container justify="center" >
-
-                            <Grid key='0' item>
-                                <Grid>
-                                    <Button variant="contained" type={"submit"} style={{margin:20}}>
-                                    Submit
+                <Paper style={{padding:40, }}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        name={'name'}
+                                        error={!!errors.name}
+                                        helperText={(errors.name) ? 'Name is required' : null}
+                                        inputRef={register({required: true})}
+                                        label="SOW Author"
+                                        margin="normal"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                <Grid container justify={'flex-start'}>
+                                    <Button
+                                        size="medium"
+                                        className="g-signin2"
+                                        data-onsuccess="onSignIn"
+                                        fullWidth
+                                    >
                                     </Button>
                                 </Grid>
-                            </Grid>
-                            <Grid key='1' item>
-                                <Grid>
-                                    <DriveButton/>
                                 </Grid>
                             </Grid>
-                    </Grid>
-                </Grid>
-            </form>
-                <Typography align={"center"} variant={"body2"}>{returnLink}</Typography>
-            </Paper>
+                        </div>
+                        <div>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        name={'customer'}
+                                        error={!!errors.customer}
+                                        helperText={(errors.customer) ? 'Customer is required' : null}
+                                        inputRef={register({required: true})}
+                                        label="Customer"
+                                        margin="normal"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        name={'customer_email'}
+                                        inputRef={register({required: true})}
+                                        label="Customer Email"
+                                        margin="normal"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                        </div>
+                        <div>
+                            <TextField
+                                name={'about_customer'}
+                                inputRef={register({required: true})}
+                                label="Customer Background - optional"
+                                multiline
+                                margin="normal"
+                                variant="outlined"
+                                fullWidth
+                            />
+                            <TextField
+                                name={'project_background'}
+                                inputRef={register({required: true})}
+                                label="Project Background - optional"
+                                multiline
+                                margin="normal"
+                                variant="outlined"
+                                fullWidth
+                            />
+                            <TextField
+                                name={'engagement'}
+                                inputRef={register({required: true})}
+                                label="Project Engagement - optional"
+                                multiline
+                                margin="normal"
+                                variant="outlined"
+                                fullWidth
+                            />
+                        </div>
+                        <div>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        name={'project_title'}
+                                        inputRef={register({required: true})}
+                                        label="Project Title"
+                                        margin="normal"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl
+                                        fullWidth>
+                                        <InputLabel>Template</InputLabel>
+                                        <Select
+                                            name={'template'}
+                                            value={template}
+                                            onChange={(evt) => {
+                                                setValue('template', evt.target.value);
+                                                setTemplate(evt.target.value)
+                                            }}
+                                            labelWidth={500}
+                                            styles={customStyles}
+                                            fullWidth={true}
+                                        >
+                                            <MenuItem value="tandm_sow_template">SOW - T&M</MenuItem>
+                                            <MenuItem value="fixed_sow_template">SOW - Fixed</MenuItem>
+                                            <MenuItem value="aci_supercharger_dsi">aci_supercharger_dsi</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                        </div>
+
+                        <Grid item xs={12}>
+                            <Grid container justify="center" >
+
+                                <Grid key='0' item>
+                                    <Grid>
+                                        <Button variant="contained" type={"submit"} style={{margin:20}}>
+                                            Submit
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                                <Grid key='1' item>
+                                    <Grid>
+                                        <DriveButton/>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </form>
+                    <Typography align={"center"} variant={"body2"}>SOW Document Drive Link</Typography>
+                    <Typography align={"center"} variant={"body2"}>{String(docsLink)}</Typography>
+                    <Typography align={"center"} variant={"body2"}>Costing Sheet Drive Link</Typography>
+                    <Typography align={"center"} variant={"body2"}>{String(sheetsLink)}</Typography>
+                </Paper>
             </Grid>
     )
 };
