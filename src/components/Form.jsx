@@ -28,6 +28,7 @@ const Form  =  () => {
     const [template, setTemplate] = useState(0);
     const [docsLink, setDocsLink] = useState(0);
     const [sheetsLink, setSheetsLink] = useState(0);
+    const [ready, setReady] = useState(false);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
     useEffect(() => {
@@ -61,6 +62,7 @@ const Form  =  () => {
         let sheetsLink, docsLink = '';
         if(return_link && return_link.docsLink) {
             docsLink = await return_link.docsLink;
+            setReady(true);
         }
         if(return_link && return_link.sheetsLink) {
             sheetsLink = await return_link.sheetsLink;
@@ -73,9 +75,10 @@ const Form  =  () => {
     }
 
     const DriveButton = () => {
-        if(docsLink === 0) {
+        console.log(ready);
+        if(ready === true) {
             return (
-                <Button variant="contained" style={{margin: 20}} disabled>
+                <Button variant="contained" style={{margin: 20}} href={"https://drive.google.com/drive/u/0/folders/1i2dtbIUX-NonzrNrnDMqSBbuhvdMpGJP"}>
                     View SOW in Drive
                 </Button>
             )
@@ -118,6 +121,7 @@ const Form  =  () => {
                                         fullWidth
                                     >
                                     </Button>
+                                    <Typography align={"center"} variant={"body2"}>Verify you are signed into an IGNW google account</Typography>
                                 </Grid>
                                 </Grid>
                             </Grid>
@@ -152,7 +156,7 @@ const Form  =  () => {
                             <TextField
                                 name={'about_customer'}
                                 inputRef={register({required: true})}
-                                label="Customer Background - optional"
+                                label="Customer Background"
                                 multiline
                                 margin="normal"
                                 variant="outlined"
@@ -161,8 +165,7 @@ const Form  =  () => {
                             <TextField
                                 name={'project_background'}
                                 inputRef={register({required: true})}
-                                label="Project Background - optional"
-                                multiline
+                                label="Project Background"
                                 margin="normal"
                                 variant="outlined"
                                 fullWidth
@@ -170,7 +173,7 @@ const Form  =  () => {
                             <TextField
                                 name={'engagement'}
                                 inputRef={register({required: true})}
-                                label="Project Engagement - optional"
+                                label="Project Engagement"
                                 multiline
                                 margin="normal"
                                 variant="outlined"
@@ -231,10 +234,6 @@ const Form  =  () => {
                             </Grid>
                         </Grid>
                     </form>
-                    <Typography align={"center"} variant={"body2"}>SOW Document Drive Link</Typography>
-                    <Typography align={"center"} variant={"body2"}>{String(docsLink)}</Typography>
-                    <Typography align={"center"} variant={"body2"}>Costing Sheet Drive Link</Typography>
-                    <Typography align={"center"} variant={"body2"}>{String(sheetsLink)}</Typography>
                 </Paper>
             </Grid>
     )
