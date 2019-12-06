@@ -12,7 +12,6 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from '@material-ui/core/InputLabel';
 import {Typography} from "@material-ui/core";
 
-
 const customStyles = {
     control: base => ({
         ...base,
@@ -21,13 +20,9 @@ const customStyles = {
     })
 };
 
-
-
 const Form  =  () => {
     const [formState, setFormState] = useState(null);
     const [template, setTemplate] = useState(0);
-    const [docsLink, setDocsLink] = useState(0);
-    const [sheetsLink, setSheetsLink] = useState(0);
     const [ready, setReady] = useState(false);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
@@ -44,7 +39,7 @@ const Form  =  () => {
     };
 
     useEffect( () => {
-        let x = submit();
+        submit();
 
 
     }, [formState]);
@@ -67,17 +62,14 @@ const Form  =  () => {
         if(return_link && return_link.sheetsLink) {
             sheetsLink = await return_link.sheetsLink;
         }
-
-
-        setDocsLink(docsLink);
-
-        setSheetsLink(sheetsLink);
+        console.log(docsLink);
+        console.log(sheetsLink);
     }
 
     const DriveButton = () => {
-        console.log(ready);
         if(ready === true) {
             return (
+                //this button becomes clickable when the SOW has been created, it opens a link to the SOW folder
                 <Button variant="contained" style={{margin: 20}} href={"https://drive.google.com/drive/u/0/folders/1i2dtbIUX-NonzrNrnDMqSBbuhvdMpGJP"}>
                     View SOW in Drive
                 </Button>
@@ -85,6 +77,7 @@ const Form  =  () => {
         }
         else {
             return (
+                //this button is disabled before the SOW has been created
                 <Button variant="contained" style={{margin: 20}} disabled>
                     View SOW in Drive
                 </Button>
@@ -93,7 +86,6 @@ const Form  =  () => {
     };
 
         return (
-
             <Grid>
                 <NavBar/>
                 <Paper style={{padding:40, }}>
@@ -174,6 +166,24 @@ const Form  =  () => {
                                 name={'engagement'}
                                 inputRef={register({required: true})}
                                 label="Project Engagement"
+                                multiline
+                                margin="normal"
+                                variant="outlined"
+                                fullWidth
+                            />
+                            <TextField
+                                name={'scope_description'}
+                                inputRef={register({required: true})}
+                                label="Scope Summary*"
+                                multiline
+                                margin="normal"
+                                variant="outlined"
+                                fullWidth
+                            />
+                            <TextField
+                                name={'phase_one'}
+                                inputRef={register({required: true})}
+                                label="Project Phase One Description*"
                                 multiline
                                 margin="normal"
                                 variant="outlined"

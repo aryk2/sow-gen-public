@@ -172,39 +172,40 @@ async function executeDocsCopy(request) {
 
     await wrapDocsCopyRequest();
 
-    //TODO favicon logo stuff from copper here
 
-    if (SOW_DATA.template === "aci_supercharger_dsi") {
-        let replace_logo = {
-            "requests": [
-                {
-                    'replaceAllText': {
-                        'containsText': {
-                            'text': '{{customer_logo}}',
-                            'matchCase': true
-                        },
-                        'replaceText': ' '
-                    }
-                },
-                {
-                    'insertInlineImage': {
-                        'uri': customer_data['logo_url'], "location": {'index': 78, 'segmentId': 'kix.hf1'},
-                        'objectSize': {
-                            'height': {'magnitude': 100, 'unit': 'PT'},
-                            'width': {'magnitude': 200, 'unit': 'PT'}
-                        }
+    if (!String(customer_data['logo_url']).endsWith(".png")) {
+        customer_data['logo_url'] = "https://drive.google.com/open?id=1gNZJ5ST9aLPa7SKxbYEJUsSCCGI9hX5H";
+    }
+
+    let replace_logo = {
+        "requests": [
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{customer_logo}}',
+                        'matchCase': true
+                    },
+                    'replaceText': ' '
+                }
+            },
+            {
+                'insertInlineImage': {
+                    'uri': customer_data['logo_url'], "location": {'index': 79, 'segmentId': 'kix.hf0'},
+                    'objectSize': {
+                        'height': {'magnitude': 100, 'unit': 'PT'},
+                        'width': {'magnitude': 200, 'unit': 'PT'}
                     }
                 }
-            ]
-        };
+            }
+        ]
+    };
 
-        let update_doc = window.gapi.client.docs.documents.batchUpdate({
-            'documentId': copy_id,
-            'resource': replace_logo
-        });
-        update_doc.execute(function (resp) {
-        });
-    }
+    let update_doc = window.gapi.client.docs.documents.batchUpdate({
+        'documentId': copy_id,
+        'resource': replace_logo
+    });
+    update_doc.execute(function (resp) {
+    });
 
 
 
@@ -327,13 +328,31 @@ async function executeDocsCopy(request) {
                     },
                     'replaceText': SOW_DATA.about_customer
                 }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{scope_description}}',
+                        'matchCase': true
+                    },
+                    'replaceText': SOW_DATA.scope_description
+                }
+            },
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{customer_background}}',
+                        'matchCase': true
+                    },
+                    'replaceText': SOW_DATA.phase_one
+                }
             }
         ]
     };
 
     console.log("https://drive.google.com/open?id=" + copy_id);
 
-    let update_doc = window.gapi.client.docs.documents.batchUpdate({
+    update_doc = window.gapi.client.docs.documents.batchUpdate({
         'documentId': copy_id,
         'resource': text_body
     });
