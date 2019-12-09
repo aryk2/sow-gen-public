@@ -11,6 +11,7 @@ import start_build from "../helpers/sow_builder";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from '@material-ui/core/InputLabel';
 import {Typography} from "@material-ui/core";
+import getCopperInfo from "../helpers/copper";
 
 const customStyles = {
     control: base => ({
@@ -23,6 +24,7 @@ const customStyles = {
 const Form  =  () => {
     const [formState, setFormState] = useState(null);
     const [template, setTemplate] = useState(0);
+    const [copperError, setCopperError] = useState(null);
     const [ready, setReady] = useState(false);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
@@ -53,17 +55,22 @@ const Form  =  () => {
 
     async function submit() {
         let return_link = {"docsLink": '', "sheetsLink": ''};
-        return_link = await wrapStart();
-        let sheetsLink, docsLink = '';
-        if(return_link && return_link.docsLink) {
-            docsLink = await return_link.docsLink;
-            setReady(true);
+        if(formState && formState.customer) {
+            let resp = await checkCompany();
+            if (resp !== "Customer not found in Copper" || (formState.customer_address && formState.customer_website)) {
+                return_link = await wrapStart();
+                let sheetsLink, docsLink = '';
+                if (return_link && return_link.docsLink) {
+                    docsLink = await return_link.docsLink;
+                    setReady(true);
+                }
+                if (return_link && return_link.sheetsLink) {
+                    sheetsLink = await return_link.sheetsLink;
+                }
+                console.log(docsLink);
+                console.log(sheetsLink);
+            }
         }
-        if(return_link && return_link.sheetsLink) {
-            sheetsLink = await return_link.sheetsLink;
-        }
-        console.log(docsLink);
-        console.log(sheetsLink);
     }
 
     const DriveButton = () => {
@@ -84,6 +91,17 @@ const Form  =  () => {
             )
         }
     };
+
+    async function checkCompany() {
+        let resp = await getCopperInfo(formState.customer, "checkName");
+        if(resp === false) {
+            setCopperError("Customer not found in Copper");
+            return new Promise((resolve, reject) => {
+                resolve("Customer not found in Copper");
+            })
+        }
+
+    }
 
         return (
             <Grid>
@@ -135,7 +153,7 @@ const Form  =  () => {
                                 <Grid item xs={6}>
                                     <TextField
                                         name={'customer_email'}
-                                        inputRef={register({required: true})}
+                                        inputRef={register()}
                                         label="Customer Email"
                                         margin="normal"
                                         variant="outlined"
@@ -145,9 +163,47 @@ const Form  =  () => {
                             </Grid>
                         </div>
                         <div>
+                            <Typography>{copperError}</Typography>
+                            {((copperError) ?
+
+                                    <div>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    name={'customer_address'}
+                                                    error={!!errors.customer_address}
+                                                    helperText={(errors.customer_address) ? 'Customer address is required' : null}
+                                                    inputRef={register({required: true})}
+                                                    label="Customer Address"
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Grid container justify={'flex-start'}>
+                                                    <TextField
+                                                        name={'customer_website'}
+                                                        error={!!errors.customer_website}
+                                                        helperText={(errors.customer_website) ? 'Customer website is required' : null}
+                                                        inputRef={register({required: true})}
+                                                        label="Customer Website"
+                                                        margin="normal"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </div>
+                                    :
+                                    null
+                            )}
+                        </div>
+                        <div>
                             <TextField
                                 name={'about_customer'}
-                                inputRef={register({required: true})}
+                                inputRef={register()}
                                 label="Customer Background"
                                 multiline
                                 margin="normal"
@@ -156,7 +212,7 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'project_background'}
-                                inputRef={register({required: true})}
+                                inputRef={register()}
                                 label="Project Background"
                                 margin="normal"
                                 variant="outlined"
@@ -164,7 +220,7 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'engagement'}
-                                inputRef={register({required: true})}
+                                inputRef={register()}
                                 label="Project Engagement"
                                 multiline
                                 margin="normal"
@@ -173,7 +229,7 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'scope_description'}
-                                inputRef={register({required: true})}
+                                inputRef={register()}
                                 label="Scope Summary*"
                                 multiline
                                 margin="normal"
@@ -182,7 +238,7 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'phase_one'}
-                                inputRef={register({required: true})}
+                                inputRef={register()}
                                 label="Project Phase One Description*"
                                 multiline
                                 margin="normal"
@@ -195,7 +251,7 @@ const Form  =  () => {
                                 <Grid item xs={6}>
                                     <TextField
                                         name={'project_title'}
-                                        inputRef={register({required: true})}
+                                        inputRef={register()}
                                         label="Project Title"
                                         margin="normal"
                                         variant="outlined"

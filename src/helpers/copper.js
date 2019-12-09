@@ -1,6 +1,19 @@
-export default async function getCopperInfo(company_data){
-    return await copperRequestWrapper(company_data);
-
+export default async function getCopperInfo(company_data, request_type){
+    if(request_type === "getInfo")
+        return await copperRequestWrapper(company_data);
+    if(request_type === "checkName") {
+        let empty_data = {
+            "customer_name": company_data,
+            "date_of_creation": "",
+            "customer_address": "",
+            "customer_address_city": "",
+            "customer_web_link": "",
+            "logo_url": "",
+            "error": 0
+        };
+        let response = await copperRequestWrapper(empty_data);
+        return response.error === 0;
+    }
 }
 
 async function copperRequestWrapper(company_data) {
@@ -17,3 +30,4 @@ async function copperRequestWrapper(company_data) {
         return response;
     }
 }
+

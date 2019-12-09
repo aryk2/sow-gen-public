@@ -119,46 +119,27 @@ async function executeDocsCopy(request) {
     let date = new Date();
     //TODO giving the wrong date????
     let creation_date = date.getMonth() + ' ' + date.getDay() + ' ' + date.getFullYear();
-    let customer_data = {
-        "customer_name": SOW_DATA.customer,
-        "date_of_creation": creation_date,
-        "customer_address": "",
-        "customer_address_city": "",
-        "customer_web_link": "",
-        "logo_url": "",
-        "error": 0
-    };
-    let response = await getCopperInfo(customer_data);
-    if(response.error === 0)
-        customer_data = response;
+    let customer_data;
+    if(SOW_DATA && SOW_DATA.customer) {
+        customer_data = {
+            "customer_name": SOW_DATA.customer,
+            "date_of_creation": creation_date,
+            "customer_address": "",
+            "customer_address_city": "",
+            "customer_web_link": "",
+            "logo_url": "",
+            "error": 0
+        };
+        if (SOW_DATA && SOW_DATA.customer_address && SOW_DATA.customer_website) {
+            customer_data.customer_address = SOW_DATA.customer_address;
+            customer_data.customer_web_link = SOW_DATA.customer_website;
+        } else {
+            let response = await getCopperInfo(customer_data, "getInfo");
+            if (response.error === 0)
+                customer_data = response;
+        }
+    }
 
-
-    // let quote_type_text = '';
-    // if (SOW_DATA.quote === "Fixed Fee"){
-    //     quote_type_text = quote_type.FIXEDFEE_TEXT;
-    // }
-    // else if (quote_type === "T&M"){
-    //     quote_type_text = quote_type.TANDM_TEXT;
-    // }
-    // else{
-    //     quote_type_text = "PLEASE ENTER INFORMATION OF HOW THIS IS TO BE BILLED AT THIS LOCATION";
-    // }
-    //
-    // let about_ignw = '';
-    // if (SOW_DATA.about === "Yes") {
-    //     about_ignw = '';//TODO format_doc('1J3LtZJButJ8gGxg80ulBJ2xpeej4B7rL4b24VpV4s8A');
-    // }
-    // else {
-    //     about_ignw = '';
-    // }
-    //
-    // let tandcs = '';
-    // if (SOW_DATA.tnc === "MSA") {
-    //     tandcs = quote_type.MSA_TEXT;
-    // }
-    // else {
-    //     tandcs = '';//TODO format_doc('1mT-6Bil5rZdtvVuFqS6bpZFhg-lZWmSokPiW5NPqAGo')
-    // }
     let copy_id = '';
 
     function wrapDocsCopyRequest() {
