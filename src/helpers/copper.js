@@ -9,10 +9,14 @@ export default async function getCopperInfo(company_data, request_type){
             "customer_address_city": "",
             "customer_web_link": "",
             "logo_url": "",
+            "company_background": "",
             "error": 0
         };
         let response = await copperRequestWrapper(empty_data);
-        return response.error === 0;
+        if (response && response.error !== 0)
+            return false;
+        else
+            return response;
     }
 }
 

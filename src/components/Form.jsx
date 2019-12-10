@@ -25,6 +25,7 @@ const Form  =  () => {
     const [formState, setFormState] = useState(null);
     const [template, setTemplate] = useState(0);
     const [copperError, setCopperError] = useState(null);
+    const [aboutCompany, setAboutCompany] = useState(null);
     const [ready, setReady] = useState(false);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
@@ -56,20 +57,18 @@ const Form  =  () => {
     async function submit() {
         let return_link = {"docsLink": '', "sheetsLink": ''};
         if(formState && formState.customer) {
-            let resp = await checkCompany();
-            if (resp !== "Customer not found in Copper" || (formState.customer_address && formState.customer_website)) {
-                return_link = await wrapStart();
-                let sheetsLink, docsLink = '';
-                if (return_link && return_link.docsLink) {
-                    docsLink = await return_link.docsLink;
-                    setReady(true);
-                }
-                if (return_link && return_link.sheetsLink) {
-                    sheetsLink = await return_link.sheetsLink;
-                }
-                console.log(docsLink);
-                console.log(sheetsLink);
+
+            return_link = await wrapStart();
+            let sheetsLink, docsLink = '';
+            if (return_link && return_link.docsLink) {
+                docsLink = await return_link.docsLink;
+                setReady(true);
             }
+            if (return_link && return_link.sheetsLink) {
+                sheetsLink = await return_link.sheetsLink;
+            }
+            console.log(docsLink);
+            console.log(sheetsLink);
         }
     }
 
@@ -92,19 +91,31 @@ const Form  =  () => {
         }
     };
 
-    async function checkCompany() {
-        let resp = await getCopperInfo(formState.customer, "checkName");
+    async function checkCompany(e) {
+        let resp = await getCopperInfo(e.target.value, "checkName");
         if(resp === false) {
             setCopperError("Customer not found in Copper");
+            setAboutCompany(null);
             return new Promise((resolve, reject) => {
                 resolve("Customer not found in Copper");
             })
         }
+        else {
+            if(resp) {
+                setCopperError(null);
+                if (resp["customer_background"])
+                    setAboutCompany(resp["customer_background"]);
+                else
+                    setAboutCompany("No about customer section in copper");
+            }
+        }
+
 
     }
 
         return (
-            <Grid>
+            <Grid container>
+                <Grid>
                 <NavBar/>
                 <Paper style={{padding:40, }}>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -147,6 +158,7 @@ const Form  =  () => {
                                         label="Customer"
                                         margin="normal"
                                         variant="outlined"
+                                        onChange={checkCompany}
                                         fullWidth
                                     />
                                 </Grid>
@@ -201,23 +213,30 @@ const Form  =  () => {
                             )}
                         </div>
                         <div>
-                            <TextField
-                                name={'about_customer'}
-                                inputRef={register()}
-                                label="Customer Background"
-                                multiline
-                                margin="normal"
-                                variant="outlined"
-                                fullWidth
-                            />
-                            <TextField
-                                name={'project_background'}
-                                inputRef={register()}
-                                label="Project Background"
-                                margin="normal"
-                                variant="outlined"
-                                fullWidth
-                            />
+                            {((!aboutCompany || aboutCompany === "No about customer section in copper") ?
+                                    <div>
+                                        <Grid container>
+                                            <Typography variant="caption" display="block">{aboutCompany}</Typography>
+                                        </Grid>
+                                        <TextField
+                                            name={'project_background'}
+                                            inputRef={register()}
+                                            label="Project Background"
+                                            margin="normal"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                    </div>
+                                :
+                                <div>
+                                    <Grid>
+                                        <Typography variant="body2">Found this customer description in Copper:</Typography>
+                                        <Typography variant="body2">{aboutCompany}</Typography>
+
+                                    </Grid>
+                                </div>
+
+                            )}
                             <TextField
                                 name={'engagement'}
                                 inputRef={register()}
@@ -301,6 +320,7 @@ const Form  =  () => {
                         </Grid>
                     </form>
                 </Paper>
+                </Grid>
             </Grid>
     )
 };

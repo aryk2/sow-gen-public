@@ -128,6 +128,7 @@ async function executeDocsCopy(request) {
             "customer_address_city": "",
             "customer_web_link": "",
             "logo_url": "",
+            "company_background": "",
             "error": 0
         };
         if (SOW_DATA && SOW_DATA.customer_address && SOW_DATA.customer_website) {
