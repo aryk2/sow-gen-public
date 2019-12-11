@@ -49,21 +49,22 @@
     -->
 
 
+
     <script>
+
 
       function onLoadCallback() {
 
-
+        console.log('onLoadCallback');
         gapi.load('auth2', function() {
           gapi.auth2.init({
             client_id: '767596157395-009pinvel2k92h75li9k5t3mn7e09r2b.apps.googleusercontent.com',
             //This two lines are important not to get profile info from your users
             fetch_basic_profile: false,
-            scope: 'email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents'
+            scope: 'email'
           });
         });
       }
-
 
 
     </script>
