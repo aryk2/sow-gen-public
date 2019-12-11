@@ -1,3 +1,13 @@
+This Application was created for IGNW by Aryeh Kempler-DeLugach to automate the process of Statement of Work 
+document creation. 
+
+This version is the public version, the config file for the Google API's has been removed. 
+
+This is a serverless React.js app running in Firebase. 
+
+This app uses GCP cloudfunctions to integrate with the Copper API.
+
+Create react app stuff:
 This project was bootstrapped with [Create React App1](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
