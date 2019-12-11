@@ -25,7 +25,7 @@ const Form  =  () => {
     const [formState, setFormState] = useState(null);
     const [template, setTemplate] = useState(0);
     const [copperError, setCopperError] = useState(null);
-    const [aboutCompany, setAboutCompany] = useState(null);
+    const [aboutCustomer, setAboutCustomer] = useState(null);
     const [ready, setReady] = useState(false);
     const {register, unregister, handleSubmit, errors, setValue} = useForm();
 
@@ -91,11 +91,11 @@ const Form  =  () => {
         }
     };
 
-    async function checkCompany(e) {
+    async function checkCustomer(e) {
         let resp = await getCopperInfo(e.target.value, "checkName");
         if(resp === false) {
             setCopperError("Customer not found in Copper");
-            setAboutCompany(null);
+            setAboutCustomer(null);
             return new Promise((resolve, reject) => {
                 resolve("Customer not found in Copper");
             })
@@ -104,17 +104,19 @@ const Form  =  () => {
             if(resp) {
                 setCopperError(null);
                 if (resp["customer_background"])
-                    setAboutCompany(resp["customer_background"]);
+                    setAboutCustomer(resp["customer_background"]);
                 else
-                    setAboutCompany("No about customer section in copper");
+                    setAboutCustomer("No about customer section in copper");
             }
         }
 
 
     }
 
+
+
         return (
-            <Grid container>
+            <Grid container xl={10} lg={10} md={10} sm={10} xs={10} >
                 <Grid>
                 <NavBar/>
                 <Paper style={{padding:40, }}>
@@ -158,14 +160,16 @@ const Form  =  () => {
                                         label="Customer"
                                         margin="normal"
                                         variant="outlined"
-                                        onChange={checkCompany}
+                                        onChange={checkCustomer}
                                         fullWidth
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
                                         name={'customer_email'}
-                                        inputRef={register()}
+                                        error={!!errors.customer_email}
+                                        helperText={(errors.customer_email) ? 'Email is required' : null}
+                                        inputRef={register({required: true})}
                                         label="Customer Email"
                                         margin="normal"
                                         variant="outlined"
@@ -213,14 +217,16 @@ const Form  =  () => {
                             )}
                         </div>
                         <div>
-                            {((!aboutCompany || aboutCompany === "No about customer section in copper") ?
+                            {((!aboutCustomer || aboutCustomer === "No about customer section in copper") ?
                                     <div>
                                         <Grid container>
-                                            <Typography variant="caption" display="block">{aboutCompany}</Typography>
+                                            <Typography variant="body2">{aboutCustomer}</Typography>
                                         </Grid>
                                         <TextField
-                                            name={'project_background'}
-                                            inputRef={register()}
+                                            name={'customer_background'}
+                                            error={!!errors.customer_background}
+                                            helperText={(errors.customer_background) ? 'Customer Background is required' : null}
+                                            inputRef={register({required: true})}
                                             label="Project Background"
                                             margin="normal"
                                             variant="outlined"
@@ -231,15 +237,19 @@ const Form  =  () => {
                                 <div>
                                     <Grid>
                                         <Typography variant="body2">Found this customer description in Copper:</Typography>
-                                        <Typography variant="body2">{aboutCompany}</Typography>
-
+                                        <Typography variant="body2">{aboutCustomer}</Typography>
+                                        <Button variant="contained"  onClick={() => {setAboutCustomer(false)}} style={{margin:20}}>
+                                            Enter alternate description
+                                        </Button>
                                     </Grid>
                                 </div>
 
                             )}
                             <TextField
                                 name={'engagement'}
-                                inputRef={register()}
+                                error={!!errors.engagement}
+                                helperText={(errors.engagement) ? 'Project Engagement is required' : null}
+                                inputRef={register({required: true})}
                                 label="Project Engagement"
                                 multiline
                                 margin="normal"
@@ -248,8 +258,10 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'scope_description'}
-                                inputRef={register()}
-                                label="Scope Summary*"
+                                error={!!errors.scope_description}
+                                helperText={(errors.scope_description) ? 'Scope Summary is required' : null}
+                                inputRef={register({required: true})}
+                                label="Scope Summary"
                                 multiline
                                 margin="normal"
                                 variant="outlined"
@@ -257,7 +269,9 @@ const Form  =  () => {
                             />
                             <TextField
                                 name={'phase_one'}
-                                inputRef={register()}
+                                error={!!errors.phase_one}
+                                helperText={(errors.phase_one) ? 'Project Phase One Description is required' : null}
+                                inputRef={register({required: true})}
                                 label="Project Phase One Description*"
                                 multiline
                                 margin="normal"
@@ -270,7 +284,9 @@ const Form  =  () => {
                                 <Grid item xs={6}>
                                     <TextField
                                         name={'project_title'}
-                                        inputRef={register()}
+                                        error={!!errors.project_title}
+                                        helperText={(errors.project_title) ? 'Project Title is required' : null}
+                                        inputRef={register({required: true})}
                                         label="Project Title"
                                         margin="normal"
                                         variant="outlined"

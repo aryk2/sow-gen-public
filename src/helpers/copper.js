@@ -9,7 +9,7 @@ export default async function getCopperInfo(company_data, request_type){
             "customer_address_city": "",
             "customer_web_link": "",
             "logo_url": "",
-            "company_background": "",
+            "customer_background": "",
             "error": 0
         };
         let response = await copperRequestWrapper(empty_data);

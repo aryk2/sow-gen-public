@@ -1,5 +1,4 @@
 import config from "../config"
-import quote_type from "./quote_type_text";
 import getCopperInfo from "./copper";
 
 
@@ -128,7 +127,7 @@ async function executeDocsCopy(request) {
             "customer_address_city": "",
             "customer_web_link": "",
             "logo_url": "",
-            "company_background": "",
+            "customer_background": "",
             "error": 0
         };
         if (SOW_DATA && SOW_DATA.customer_address && SOW_DATA.customer_website) {
@@ -139,6 +138,11 @@ async function executeDocsCopy(request) {
             if (response.error === 0)
                 customer_data = response;
         }
+    }
+    console.log(SOW_DATA);
+    if(SOW_DATA && SOW_DATA.customer_background) {
+        console.log(SOW_DATA.customer_background);
+        customer_data.customer_background = SOW_DATA.customer_background;
     }
 
     let copy_id = '';
@@ -308,7 +312,7 @@ async function executeDocsCopy(request) {
                         'text': '{{customer_background}}',
                         'matchCase': true
                     },
-                    'replaceText': SOW_DATA.about_customer
+                    'replaceText': customer_data['customer_background']
                 }
             },
             {
